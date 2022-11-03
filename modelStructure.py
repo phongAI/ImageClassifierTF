@@ -114,3 +114,19 @@ class VGG16(LeNet):
         model = models.Model(input,output2)
         model.compile(optimizer=self.optimizer, loss="sparse_categorical_crossentropy", metrics=['accuracy'])
         return model
+
+class Resnet(LeNet):
+    def __init__(self,input_shape = variables.input_shape,classes = variables.classes):
+        super().__init__(input_shape,classes)
+
+    def build(self):
+        rootModel = applications.ResNet50(weights=None,input_shape=self.input_shape,include_top=False,classes=self.classes)
+        input = rootModel.input
+        output1 = rootModel.output
+        x = layers.Flatten()(output1)
+        x = layers.Dense(512,activation="relu")(x)
+        x = layers.Dropout(0.25)(x)
+        output2 = layers.Dense(self.classes,activation="softmax")(x)
+        model = models.Model(input,output2)
+        model.compile(optimizer=self.optimizer, loss="sparse_categorical_crossentropy", metrics=['accuracy'])
+        return model
